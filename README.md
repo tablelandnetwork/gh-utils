@@ -4,7 +4,7 @@
 
 ## Milestones
 
-The `create-milestones` script will create all seasonal milestones in a given repo.
+The `create-milestones` script will sync all seasonal milestones in a given repo.
 
 ### Setup
 
@@ -17,13 +17,13 @@ gh extension install valeriobelli/gh-milestone
 ### Usage
 
 ```
-./create-milestones [path to local repo]
+./sync-milestones [path to local repo]
 ```
 
 For example, assuming you have the `go-tableland` repo next to this repo on your machine:
 
 ```
-./create-milestones ../go-tableland
+./sync-milestones ../go-tableland
 ```
 
-This will create all seasonal milestones in the `go-tableland` repo.
+This will sync all seasonal milestones in the `go-tableland` repo.

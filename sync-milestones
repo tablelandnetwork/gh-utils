@@ -1,0 +1,22 @@
+#!/bin/zsh
+set -eu
+
+if [ "$#" -ne 1 ]; then
+    echo "please provide path to target repo, e.g., './sync-milestones ../go-tableland'"
+    exit 1
+fi
+(cd $1 && echo "Syncing milestones in $PWD")
+
+declare -A existing
+(cd $1 && (gh milestone list --state all --output json | jq '.[] | with_entries(select([.key] | inside(["Number", "Title"])))' | jq -s -r '(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv' | tail -n +2 | tr -d '"' > .list.csv))
+while IFS=, read -r number title
+do
+  existing[$title]=$number
+done < $1/.list.csv
+rm $1/.list.csv
+
+while IFS=, read -r title date
+do
+  (cd $1 && (gh milestone create --title ${title} --due-date ${date} > /dev/null 2>&1) || gh milestone edit ${existing[$title]} --due-date ${date} > /dev/null 2>&1)
+  echo "Synced milestone ${title} with due date ${date}"
+done < milestones.csv
